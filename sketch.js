@@ -176,7 +176,7 @@ function buttonInit(text, w, h, x, y) {
 	return button;
 }
 function draw() {
-	background(30);
+	background(48);
 	let current = millis();
 	if ( (current-time)>=1000 ){
 		time += 1000;
