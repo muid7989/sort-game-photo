@@ -14,20 +14,17 @@ const GRID_SIZE = 64;
 const GRID_W = 64;
 const GRID_BASE_X = GRID_SIZE*2;
 const GRID_BASE_Y = GRID_SIZE*4;
-const GRID_X = 2;
-const GRID_Y = 8;
-const PLAYER_SIZE = 56;
-const PLAYER_H = 64;
+const PLAYER_H = GRID_SIZE;
 const PLAYER_W = PLAYER_H * 3;
-const ITEM_H = PLAYER_H-8;
-const ITEM_W = PLAYER_W-8;
+const ITEM_H = PLAYER_H;
+const ITEM_W = PLAYER_W;
 const ITEM_INT_X = GRID_SIZE*6;
 const ITEM_INT_Y = GRID_SIZE;
 const ITEM_BASE_X = GRID_BASE_X+GRID_SIZE*2.4;
 const ITEM_BASE_Y = GRID_BASE_Y;
 const ITEM_ROW = 8;
 const ITEM_NUM = 15;
-const ITEM_COLOR = 'gray';
+const ITEM_COLOR = 160;
 const ITEM_SEL_COLOR = 'lightgray';
 const ITEM_ARRAY = [
 	'家康',
@@ -155,12 +152,13 @@ function setup() {
 
 	gui = createGui();
 	gui.loadStyle("Seafoam");
-	getButton = buttonInit('get', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y+BUTTON_H+BUTTON_M);
+	gui.setTextSize(48);
+	getButton = buttonInit('SEL', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y+BUTTON_H+BUTTON_M);
 	upButton = buttonInit('↑', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y);
 	downButton = buttonInit('↓', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y+(BUTTON_H+BUTTON_M)*2);
 	leftButton = buttonInit('←', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W*3)/2-BUTTON_M, BUTTON_Y+BUTTON_H+BUTTON_M);
 	rightButton = buttonInit('→', BUTTON_W, BUTTON_H, (CANVAS_W+BUTTON_W)/2+BUTTON_M, BUTTON_Y+BUTTON_H+BUTTON_M);
-	startButton = buttonInit('start', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y-BUTTON_H*1.5);
+	startButton = buttonInit('START', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y-BUTTON_H*1.5);
 	items = [];
 	for (let i=0; i<ITEM_NUM; i++){
 		items[i] = {};
@@ -216,9 +214,9 @@ function draw() {
 	textSize(40);
 	for (let i=0; i<items.length; i++){
 		if (i!=player.getIndex){
-			strokeWeight(1);
+			strokeWeight(0);
 			stroke(255);
-			fill(ITEM_COLOR);
+			fill(ITEM_COLOR-i*4);
 			rect(ITEM_BASE_X+ITEM_INT_X*items[i].pos.x, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y, ITEM_W, ITEM_H);	
 			fill(255);
 			text(ITEM_ARRAY[i], ITEM_BASE_X+ITEM_INT_X*items[i].pos.x, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y);
