@@ -12,37 +12,20 @@ const BUTTON_M = 24;
 
 const GRID_SIZE = 64;
 const GRID_W = 64;
-const GRID_BASE_X = GRID_SIZE*2;
-const GRID_BASE_Y = GRID_SIZE*4;
-const PLAYER_H = GRID_SIZE;
-const PLAYER_W = PLAYER_H * 3;
-const ITEM_H = PLAYER_H;
-const ITEM_W = PLAYER_W;
-const ITEM_INT_X = GRID_SIZE*6;
-const ITEM_INT_Y = GRID_SIZE;
-const ITEM_BASE_X = GRID_BASE_X+GRID_SIZE*2.4;
+const GRID_BASE_X = GRID_SIZE*1;
+const GRID_BASE_Y = GRID_SIZE*2;
+const ITEM_NUM = 20;
+const ITEM_H = GRID_SIZE*8;
+const ITEM_W = GRID_SIZE*13/ITEM_NUM;
+const ITEM_INT_X = ITEM_W;
+const ITEM_INT_Y = ITEM_H;
+const ITEM_BASE_X = GRID_BASE_X;
 const ITEM_BASE_Y = GRID_BASE_Y;
-const ITEM_ROW = 8;
-const ITEM_NUM = 15;
+//const ITEM_ROW = 8;
 const ITEM_COLOR = 160;
 const ITEM_SEL_COLOR = 'lightgray';
-const ITEM_ARRAY = [
-	'家康',
-	'秀忠',
-	'家光',
-	'家綱',
-	'綱吉',
-	'家宣',
-	'家継',
-	'吉宗',
-	'家重',
-	'家治',
-	'家斉',
-	'家慶',
-	'家定',
-	'家茂',
-	'慶喜'
-];
+const PLAYER_H = ITEM_H+8;
+const PLAYER_W = ITEM_W+8;
 
 let gui;
 let upButton, downButton, leftButton, rightButton;
@@ -53,6 +36,9 @@ let startTime;
 let endTime = 0;
 let player;
 let items;
+let itemImg;
+let itemImgWidth, itemImgHeight;
+let fileInput;
 
 let timeCount;
 const TEXT_VIEW_SIZE = 32;
@@ -120,7 +106,7 @@ function getFn() {
 			}
 		}
 		for (let i=0; i<items.length; i++){
-			if ((items[i].pos.x!=int(i/ITEM_ROW)) || (items[i].pos.y!=i%ITEM_ROW)){
+			if (items[i].pos.x!=i){
 				return;
 			}
 		}
@@ -136,8 +122,15 @@ function startFn() {
 	player.getNum = 0;
 	const numArr = numShuffle(ITEM_NUM);
 	for (let i=0; i<ITEM_NUM; i++){
-		items[i].pos.x = int(numArr[i]/ITEM_ROW);
-		items[i].pos.y = numArr[i]%ITEM_ROW;
+		items[i].pos.x = numArr[i];
+//		items[i].pos.y = numArr[i]%ITEM_ROW;
+	}
+}
+function handleFile(file) {
+	if (file.type == 'image') {
+		itemImg = loadImage(file.data);
+	}else{
+		itemImg = null;
 	}
 }
 function setup() {
@@ -149,7 +142,10 @@ function setup() {
 	player.pos.y = 0;
 	items = [];
 	rectMode(CENTER);
+	fileInput = createFileInput(handleFile);
 
+//	itemImg = loadImage('./sample_img.png');
+	itemImg = loadImage('./DSCF9001.jpg');
 	gui = createGui();
 	gui.loadStyle("Seafoam");
 	gui.setTextSize(48);
@@ -163,8 +159,8 @@ function setup() {
 	for (let i=0; i<ITEM_NUM; i++){
 		items[i] = {};
 		items[i].pos = {};
-		items[i].pos.x = int(i/ITEM_ROW);
-		items[i].pos.y = i%ITEM_ROW;
+		items[i].pos.x = i;
+		items[i].pos.y = 0;
 		items[i].enable = true;
 	}
 	textAlign(CENTER,CENTER);
@@ -202,6 +198,7 @@ function draw() {
 	strokeWeight(1);
 	stroke(255);
 	fill(255);
+/*
 	textSize(40);
 	for (let i=0; i<ITEM_NUM; i++){
 		text(i+1, GRID_BASE_X+ITEM_INT_X*tx, GRID_BASE_Y+ITEM_INT_Y*ty);
@@ -211,37 +208,46 @@ function draw() {
 			ty = 0;
 		}
 	}
+*/
+	itemImgWidth = itemImg.width/ITEM_NUM;
+	itemImgHeight = itemImg.height;
 	textSize(40);
 	for (let i=0; i<items.length; i++){
 		if (i!=player.getIndex){
 			strokeWeight(0);
 			stroke(255);
 			fill(ITEM_COLOR-i*4);
-			rect(ITEM_BASE_X+ITEM_INT_X*items[i].pos.x, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y, ITEM_W, ITEM_H);	
-			fill(255);
-			text(ITEM_ARRAY[i], ITEM_BASE_X+ITEM_INT_X*items[i].pos.x, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y);
+//			rect(ITEM_BASE_X+ITEM_INT_X*items[i].pos.x+ITEM_W/2, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y+ITEM_H/2, ITEM_W, ITEM_H);	
+			image(itemImg, ITEM_BASE_X+ITEM_INT_X*items[i].pos.x, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y, ITEM_W, ITEM_H,
+				itemImgWidth*i, 0, itemImgWidth, itemImgHeight
+			);
+//			fill(255);
+//			text(ITEM_ARRAY[i], ITEM_BASE_X+ITEM_INT_X*items[i].pos.x, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y);
 		}
 		if (player.getIndex!=null){
-			strokeWeight(6);
-			stroke('pink');
-			fill(ITEM_SEL_COLOR);
-			rect(ITEM_BASE_X+ITEM_INT_X*player.pos.x, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y, ITEM_W, ITEM_H);
-			fill(255);
-			strokeWeight(1);
-			text(ITEM_ARRAY[player.getIndex], ITEM_BASE_X+ITEM_INT_X*player.pos.x, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y);
+			strokeWeight(0);
+//			stroke('pink');
+//			fill(ITEM_SEL_COLOR);
+//			rect(ITEM_BASE_X+ITEM_INT_X*player.pos.x+ITEM_W/2, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y+ITEM_H/2, ITEM_W, ITEM_H);
+			image(itemImg, ITEM_BASE_X+ITEM_INT_X*player.pos.x, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y, ITEM_W, ITEM_H,
+				itemImgWidth*player.getIndex, 0, itemImgWidth, itemImgHeight
+			);
+//			fill(255);
+//			strokeWeight(1);
+//			text(ITEM_ARRAY[player.getIndex], ITEM_BASE_X+ITEM_INT_X*player.pos.x, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y);
 		}
 	}
 	stroke(255);
 	strokeWeight(3);
 	noFill();
-	rect(ITEM_BASE_X+ITEM_INT_X*player.pos.x, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y, PLAYER_W, PLAYER_H);
+	rect(ITEM_BASE_X+ITEM_INT_X*player.pos.x+ITEM_W/2, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y+ITEM_H/2, PLAYER_W, PLAYER_H);
 
 	if (startFlag==false){
 		fill(255);
 		stroke(255);
 		textSize(64);
 		textAlign(CENTER);
-		text(endTime.toFixed(1)+' sec', CANVAS_W/2, GRID_SIZE*2);
+		text(endTime.toFixed(1)+' sec', CANVAS_W/2, GRID_SIZE*3);
 	}
 	drawGui();
 	fill(255);
