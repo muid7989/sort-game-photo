@@ -26,7 +26,6 @@ const ITEM_SEL_COLOR = 'yellow';
 let playerHeight = itemHeight+8;
 let playerWidth = itemWidth+8;
 
-let gui;
 let upButton, downButton, leftButton, rightButton;
 let getButton;
 let startButton;
@@ -145,15 +144,18 @@ function setup() {
 	fileInput.style('font-size', '32px');
 
 	itemImg = loadImage('./sample_img.png');
-	gui = createGui();
-	gui.loadStyle("Seafoam");
-	gui.setTextSize(48);
 	getButton = buttonInit('SEL', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y+BUTTON_H+BUTTON_M);
 	upButton = buttonInit('↑', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y);
 	downButton = buttonInit('↓', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y+(BUTTON_H+BUTTON_M)*2);
 	leftButton = buttonInit('←', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W*3)/2-BUTTON_M, BUTTON_Y+BUTTON_H+BUTTON_M);
 	rightButton = buttonInit('→', BUTTON_W, BUTTON_H, (CANVAS_W+BUTTON_W)/2+BUTTON_M, BUTTON_Y+BUTTON_H+BUTTON_M);
 	startButton = buttonInit('START', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y-BUTTON_H*1.5);
+	getButton.mousePressed(getFn);
+	upButton.mousePressed(upFn);
+	downButton.mousePressed(downFn);
+	leftButton.mousePressed(leftFn);
+	rightButton.mousePressed(rightFn);
+	startButton.mousePressed(startFn);
 	items = [];
 	for (let i=0; i<ITEM_NUM; i++){
 		items[i] = {};
@@ -165,7 +167,10 @@ function setup() {
 	textAlign(CENTER,CENTER);
 }
 function buttonInit(text, w, h, x, y) {
-	let button = createButton(text, x, y, w, h);
+	let button = createButton(text);
+	button.size(w,h);
+	button.position(x,y);
+	button.style('font-size', '32px');
 	return button;
 }
 function draw() {
@@ -176,12 +181,14 @@ function draw() {
 		fps = frameCount - frameCountBuffer;
 		frameCountBuffer = frameCount;
 	}
+/*
 	if (getButton.isPressed) getFn();
 	if (upButton.isPressed) upFn();
 	if (downButton.isPressed) downFn();
 	if (leftButton.isPressed) leftFn();
 	if (rightButton.isPressed) rightFn();
 	if (startButton.isPressed) startFn();
+*/
 	if (DEBUG){
 		stroke(128);
 		strokeWeight(1);
@@ -237,7 +244,7 @@ function draw() {
 		textAlign(CENTER);
 		text(endTime.toFixed(1)+' sec', CANVAS_W/2, GRID_SIZE*3);
 	}
-	drawGui();
+//	drawGui();
 	fill(255);
 	stroke(255);
 	textSize(16);
