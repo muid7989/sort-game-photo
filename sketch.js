@@ -17,13 +17,10 @@ const GRID_BASE_Y = GRID_SIZE*1;
 const ITEM_NUM = 20;
 const VIEW_H = GRID_SIZE*10;
 const VIEW_W = GRID_SIZE*13;
-//const ITEM_INT_X = ITEM_W;
-//const ITEM_INT_Y = ITEM_H;
 const ITEM_BASE_X = GRID_BASE_X;
 const ITEM_BASE_Y = GRID_BASE_Y;
 let itemHeight = VIEW_H/ITEM_NUM;
 let itemWidth = VIEW_W;
-//const ITEM_ROW = 8;
 const ITEM_COLOR = 160;
 const ITEM_SEL_COLOR = 'yellow';
 let playerHeight = itemHeight+8;
@@ -104,18 +101,6 @@ function getFn() {
 		}
 	}else{
 		player.getIndex = null;
-/*
-		for (let i=0; i<items.length; i++){
-			if ((player.pos.x==items[i].pos.x) && (player.pos.y==items[i].pos.y)){
-				items[i].pos.x = items[player.getIndex].pos.x;
-				items[player.getIndex].pos.x = player.pos.x;
-				items[i].pos.y = items[player.getIndex].pos.y;
-				items[player.getIndex].pos.y = player.pos.y;
-				player.getIndex = null;
-				break;
-			}
-		}
-*/
 		for (let i=0; i<items.length; i++){
 			if (items[i].pos.y!=i){
 				return;
@@ -156,9 +141,10 @@ function setup() {
 	items = [];
 	rectMode(CENTER);
 	fileInput = createFileInput(handleFile);
+//	fileInput.size(100,100);
+	fileInput.style('font-size', '32px');
 
-//	itemImg = loadImage('./sample_img.png');
-	itemImg = loadImage('./DSCF9001.jpg');
+	itemImg = loadImage('./sample_img.png');
 	gui = createGui();
 	gui.loadStyle("Seafoam");
 	gui.setTextSize(48);
