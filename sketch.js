@@ -105,7 +105,7 @@ function getFn() {
 				return;
 			}
 		}
-		startButton.visible = true;
+		startButton.show();
 		endTime = (millis() - startTime)/1000;
 		startFlag = false;
 	}
@@ -113,7 +113,7 @@ function getFn() {
 function startFn() {
 	startFlag = true;
 	startTime = millis();
-	startButton.visible = false;
+	startButton.hide();
 	player.getNum = 0;
 	const numArr = numShuffle(ITEM_NUM);
 	for (let i=0; i<ITEM_NUM; i++){
