@@ -13,19 +13,21 @@ const BUTTON_M = 24;
 const GRID_SIZE = 64;
 const GRID_W = 64;
 const GRID_BASE_X = GRID_SIZE*1;
-const GRID_BASE_Y = GRID_SIZE*2;
+const GRID_BASE_Y = GRID_SIZE*1;
 const ITEM_NUM = 20;
-const ITEM_H = GRID_SIZE*8;
-const ITEM_W = GRID_SIZE*13/ITEM_NUM;
-const ITEM_INT_X = ITEM_W;
-const ITEM_INT_Y = ITEM_H;
+const VIEW_H = GRID_SIZE*10;
+const VIEW_W = GRID_SIZE*13;
+//const ITEM_INT_X = ITEM_W;
+//const ITEM_INT_Y = ITEM_H;
 const ITEM_BASE_X = GRID_BASE_X;
 const ITEM_BASE_Y = GRID_BASE_Y;
+let itemHeight = VIEW_H/ITEM_NUM;
+let itemWidth = VIEW_W;
 //const ITEM_ROW = 8;
 const ITEM_COLOR = 160;
 const ITEM_SEL_COLOR = 'lightgray';
-const PLAYER_H = ITEM_H+8;
-const PLAYER_W = ITEM_W+8;
+let playerHeight = itemHeight+8;
+let playerWidth = itemWidth+8;
 
 let gui;
 let upButton, downButton, leftButton, rightButton;
@@ -106,7 +108,7 @@ function getFn() {
 			}
 		}
 		for (let i=0; i<items.length; i++){
-			if (items[i].pos.x!=i){
+			if (items[i].pos.y!=i){
 				return;
 			}
 		}
@@ -122,8 +124,7 @@ function startFn() {
 	player.getNum = 0;
 	const numArr = numShuffle(ITEM_NUM);
 	for (let i=0; i<ITEM_NUM; i++){
-		items[i].pos.x = numArr[i];
-//		items[i].pos.y = numArr[i]%ITEM_ROW;
+		items[i].pos.y = numArr[i];
 	}
 }
 function handleFile(file) {
@@ -159,8 +160,8 @@ function setup() {
 	for (let i=0; i<ITEM_NUM; i++){
 		items[i] = {};
 		items[i].pos = {};
-		items[i].pos.x = i;
-		items[i].pos.y = 0;
+		items[i].pos.x = 0;
+		items[i].pos.y = i;
 		items[i].enable = true;
 	}
 	textAlign(CENTER,CENTER);
@@ -198,49 +199,36 @@ function draw() {
 	strokeWeight(1);
 	stroke(255);
 	fill(255);
-/*
-	textSize(40);
-	for (let i=0; i<ITEM_NUM; i++){
-		text(i+1, GRID_BASE_X+ITEM_INT_X*tx, GRID_BASE_Y+ITEM_INT_Y*ty);
-		ty++;
-		if (ty>=ITEM_ROW){
-			tx++;
-			ty = 0;
-		}
+	itemWidth = VIEW_W;
+	itemHeight = VIEW_W*itemImg.height/itemImg.width/ITEM_NUM;
+	itemImgHeight = itemImg.height/ITEM_NUM;
+	itemImgWidth = itemImg.width;
+	if (itemImg.height>(itemImg.width*VIEW_H/VIEW_W)){
+		itemHeight = VIEW_H/ITEM_NUM;
+		itemWidth = VIEW_H*itemImg.width/itemImg.height;
 	}
-*/
-	itemImgWidth = itemImg.width/ITEM_NUM;
-	itemImgHeight = itemImg.height;
+	playerWidth = itemWidth+8;
+	playerHeight = itemHeight+8;
 	textSize(40);
 	for (let i=0; i<items.length; i++){
 		if (i!=player.getIndex){
 			strokeWeight(0);
 			stroke(255);
-			fill(ITEM_COLOR-i*4);
-//			rect(ITEM_BASE_X+ITEM_INT_X*items[i].pos.x+ITEM_W/2, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y+ITEM_H/2, ITEM_W, ITEM_H);	
-			image(itemImg, ITEM_BASE_X+ITEM_INT_X*items[i].pos.x, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y, ITEM_W, ITEM_H,
-				itemImgWidth*i, 0, itemImgWidth, itemImgHeight
+			image(itemImg, (CANVAS_W-itemWidth)/2, ITEM_BASE_Y+itemHeight*items[i].pos.y, itemWidth, itemHeight,
+				0, itemImgHeight*i, itemImgWidth, itemImgHeight
 			);
-//			fill(255);
-//			text(ITEM_ARRAY[i], ITEM_BASE_X+ITEM_INT_X*items[i].pos.x, ITEM_BASE_Y+ITEM_INT_Y*items[i].pos.y);
 		}
 		if (player.getIndex!=null){
 			strokeWeight(0);
-//			stroke('pink');
-//			fill(ITEM_SEL_COLOR);
-//			rect(ITEM_BASE_X+ITEM_INT_X*player.pos.x+ITEM_W/2, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y+ITEM_H/2, ITEM_W, ITEM_H);
-			image(itemImg, ITEM_BASE_X+ITEM_INT_X*player.pos.x, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y, ITEM_W, ITEM_H,
-				itemImgWidth*player.getIndex, 0, itemImgWidth, itemImgHeight
+			image(itemImg, (CANVAS_W-itemWidth)/2, ITEM_BASE_Y+itemHeight*player.pos.y, itemWidth, itemHeight,
+				0, itemImgHeight*player.getIndex, itemImgWidth, itemImgHeight
 			);
-//			fill(255);
-//			strokeWeight(1);
-//			text(ITEM_ARRAY[player.getIndex], ITEM_BASE_X+ITEM_INT_X*player.pos.x, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y);
 		}
 	}
 	stroke(255);
 	strokeWeight(3);
 	noFill();
-	rect(ITEM_BASE_X+ITEM_INT_X*player.pos.x+ITEM_W/2, ITEM_BASE_Y+ITEM_INT_Y*player.pos.y+ITEM_H/2, PLAYER_W, PLAYER_H);
+	rect(CANVAS_W/2, ITEM_BASE_Y+itemHeight*player.pos.y+itemHeight/2, playerWidth, playerHeight);
 
 	if (startFlag==false){
 		fill(255);
