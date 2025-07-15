@@ -25,7 +25,7 @@ let itemHeight = VIEW_H/ITEM_NUM;
 let itemWidth = VIEW_W;
 //const ITEM_ROW = 8;
 const ITEM_COLOR = 160;
-const ITEM_SEL_COLOR = 'lightgray';
+const ITEM_SEL_COLOR = 'yellow';
 let playerHeight = itemHeight+8;
 let playerWidth = itemWidth+8;
 
@@ -72,6 +72,12 @@ function playerMove(x, y){
 		if ((items[i].pos.x==tx) && (items[i].pos.y==ty)){
 			player.pos.x = tx;
 			player.pos.y = ty;
+			if (player.getIndex!=null){
+				items[i].pos.x = items[player.getIndex].pos.x;
+				items[i].pos.y = items[player.getIndex].pos.y;
+				items[player.getIndex].pos.x = tx;
+				items[player.getIndex].pos.y = ty;
+			}
 			return;
 		}
 	}
@@ -97,6 +103,8 @@ function getFn() {
 			}
 		}
 	}else{
+		player.getIndex = null;
+/*
 		for (let i=0; i<items.length; i++){
 			if ((player.pos.x==items[i].pos.x) && (player.pos.y==items[i].pos.y)){
 				items[i].pos.x = items[player.getIndex].pos.x;
@@ -107,6 +115,7 @@ function getFn() {
 				break;
 			}
 		}
+*/
 		for (let i=0; i<items.length; i++){
 			if (items[i].pos.y!=i){
 				return;
@@ -130,6 +139,9 @@ function startFn() {
 function handleFile(file) {
 	if (file.type == 'image') {
 		itemImg = loadImage(file.data);
+		startButton.visible = true;
+		endTime = 0;
+		startFlag = false;
 	}else{
 		itemImg = null;
 	}
@@ -213,13 +225,15 @@ function draw() {
 	for (let i=0; i<items.length; i++){
 		if (i!=player.getIndex){
 			strokeWeight(0);
-			stroke(255);
 			image(itemImg, (CANVAS_W-itemWidth)/2, ITEM_BASE_Y+itemHeight*items[i].pos.y, itemWidth, itemHeight,
 				0, itemImgHeight*i, itemImgWidth, itemImgHeight
 			);
 		}
 		if (player.getIndex!=null){
-			strokeWeight(0);
+			strokeWeight(4);
+			stroke(ITEM_SEL_COLOR);
+			noFill();
+			rect(CANVAS_W/2, ITEM_BASE_Y+itemHeight*player.pos.y+itemHeight/2, itemWidth, itemHeight);
 			image(itemImg, (CANVAS_W-itemWidth)/2, ITEM_BASE_Y+itemHeight*player.pos.y, itemWidth, itemHeight,
 				0, itemImgHeight*player.getIndex, itemImgWidth, itemImgHeight
 			);
