@@ -7,7 +7,7 @@ const CANVAS_H = 1280;
 
 const BUTTON_W = CANVAS_W/4;
 const BUTTON_H = BUTTON_W/2;
-const BUTTON_Y = CANVAS_H*2/3;
+const BUTTON_Y = CANVAS_H*3/5;
 const BUTTON_M = 24;
 
 const GRID_SIZE = 64;
@@ -140,8 +140,8 @@ function setup() {
 	items = [];
 	rectMode(CENTER);
 	fileInput = createFileInput(handleFile);
-//	fileInput.size(100,100);
 	fileInput.style('font-size', '32px');
+	fileInput.position(24, CANVAS_H-64);
 
 	itemImg = loadImage('./sample_img.png');
 	getButton = buttonInit('SEL', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y+BUTTON_H+BUTTON_M);
