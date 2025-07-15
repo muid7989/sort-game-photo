@@ -246,3 +246,6 @@ function draw() {
 	text('fps:'+fps, DEBUG_VIEW_X, debugY);
 	debugY += DEBUG_VIEW_H;
 }
+function touchMoved() {
+	return false;
+}
