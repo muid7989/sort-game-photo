@@ -14,12 +14,15 @@ const GRID_SIZE = 64;
 const GRID_W = 64;
 const GRID_BASE_X = GRID_SIZE*1;
 const GRID_BASE_Y = GRID_SIZE*1;
-const ITEM_NUM = 20;
+//const ITEM_NUM = 20;
 const VIEW_H = GRID_SIZE*10;
 const VIEW_W = GRID_SIZE*13;
 const ITEM_BASE_X = GRID_BASE_X;
 const ITEM_BASE_Y = GRID_BASE_Y;
-let itemHeight = VIEW_H/ITEM_NUM;
+const ITEM_NUM_ARR = [ 8, 16, 32, 64, 128 ];
+let itemNum = 16;
+let itemNumSelect = 1;
+let itemHeight = VIEW_H/itemNum;
 let itemWidth = VIEW_W;
 const ITEM_COLOR = 160;
 const ITEM_SEL_COLOR = 'yellow';
@@ -37,6 +40,7 @@ let items;
 let itemImg;
 let itemImgWidth, itemImgHeight;
 let fileInput;
+let itemNumButton;
 
 let timeCount;
 const TEXT_VIEW_SIZE = 32;
@@ -64,7 +68,7 @@ function numShuffle(num) {
 function playerMove(x, y){
 	const tx = player.pos.x + x;
 	const ty = player.pos.y + y;
-	for (let i=0; i<ITEM_NUM; i++){
+	for (let i=0; i<itemNum; i++){
 		if ((items[i].pos.x==tx) && (items[i].pos.y==ty)){
 			player.pos.x = tx;
 			player.pos.y = ty;
@@ -92,7 +96,7 @@ function rightFn() {
 }
 function getFn() {
 	if (player.getIndex==null){
-		for (let i=0; i<items.length; i++){
+		for (let i=0; i<itemNum; i++){
 			if ((player.pos.x==items[i].pos.x) && (player.pos.y==items[i].pos.y)){
 				player.getIndex = i;
 				break;
@@ -100,7 +104,7 @@ function getFn() {
 		}
 	}else{
 		player.getIndex = null;
-		for (let i=0; i<items.length; i++){
+		for (let i=0; i<itemNum; i++){
 			if (items[i].pos.y!=i){
 				return;
 			}
@@ -115,10 +119,21 @@ function startFn() {
 	startTime = millis();
 	startButton.hide();
 	player.getNum = 0;
-	const numArr = numShuffle(ITEM_NUM);
-	for (let i=0; i<ITEM_NUM; i++){
+	const numArr = numShuffle(itemNum);
+	for (let i=0; i<itemNum; i++){
 		items[i].pos.y = numArr[i];
 	}
+}
+function itemNumFn() {
+	itemNumSelect++;
+	if (itemNumSelect>=ITEM_NUM_ARR.length){
+		itemNumSelect = 0;
+	}
+	itemNum = ITEM_NUM_ARR[itemNumSelect];
+	this.html(itemNum);
+	itemInit();
+	startButton.show();
+	startFlag = false;
 }
 function handleFile(file) {
 	if (file.type == 'image') {
@@ -128,6 +143,16 @@ function handleFile(file) {
 		startFlag = false;
 	}else{
 		itemImg = null;
+	}
+}
+function itemInit() {
+	items = [];
+	for (let i=0; i<itemNum; i++){
+		items[i] = {};
+		items[i].pos = {};
+		items[i].pos.x = 0;
+		items[i].pos.y = i;
+		items[i].enable = true;
 	}
 }
 function setup() {
@@ -147,23 +172,19 @@ function setup() {
 	getButton = buttonInit('SEL', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y+BUTTON_H+BUTTON_M);
 	upButton = buttonInit('↑', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y);
 	downButton = buttonInit('↓', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y+(BUTTON_H+BUTTON_M)*2);
-	leftButton = buttonInit('←', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W*3)/2-BUTTON_M, BUTTON_Y+BUTTON_H+BUTTON_M);
-	rightButton = buttonInit('→', BUTTON_W, BUTTON_H, (CANVAS_W+BUTTON_W)/2+BUTTON_M, BUTTON_Y+BUTTON_H+BUTTON_M);
+//	leftButton = buttonInit('←', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W*3)/2-BUTTON_M, BUTTON_Y+BUTTON_H+BUTTON_M);
+//	rightButton = buttonInit('→', BUTTON_W, BUTTON_H, (CANVAS_W+BUTTON_W)/2+BUTTON_M, BUTTON_Y+BUTTON_H+BUTTON_M);
 	startButton = buttonInit('START', BUTTON_W, BUTTON_H, (CANVAS_W-BUTTON_W)/2, BUTTON_Y-BUTTON_H*1.5);
+	itemNumButton = buttonInit(itemNum, GRID_SIZE, GRID_SIZE, CANVAS_W-GRID_SIZE*1.5, GRID_SIZE*0.5);
 	getButton.mousePressed(getFn);
 	upButton.mousePressed(upFn);
 	downButton.mousePressed(downFn);
-	leftButton.mousePressed(leftFn);
-	rightButton.mousePressed(rightFn);
+//	leftButton.mousePressed(leftFn);
+//	rightButton.mousePressed(rightFn);
 	startButton.mousePressed(startFn);
-	items = [];
-	for (let i=0; i<ITEM_NUM; i++){
-		items[i] = {};
-		items[i].pos = {};
-		items[i].pos.x = 0;
-		items[i].pos.y = i;
-		items[i].enable = true;
-	}
+	itemNumButton.mousePressed(itemNumFn);
+
+	itemInit();
 	textAlign(CENTER,CENTER);
 }
 function buttonInit(text, w, h, x, y) {
@@ -181,14 +202,6 @@ function draw() {
 		fps = frameCount - frameCountBuffer;
 		frameCountBuffer = frameCount;
 	}
-/*
-	if (getButton.isPressed) getFn();
-	if (upButton.isPressed) upFn();
-	if (downButton.isPressed) downFn();
-	if (leftButton.isPressed) leftFn();
-	if (rightButton.isPressed) rightFn();
-	if (startButton.isPressed) startFn();
-*/
 	if (DEBUG){
 		stroke(128);
 		strokeWeight(1);
@@ -205,17 +218,17 @@ function draw() {
 	stroke(255);
 	fill(255);
 	itemWidth = VIEW_W;
-	itemHeight = VIEW_W*itemImg.height/itemImg.width/ITEM_NUM;
-	itemImgHeight = itemImg.height/ITEM_NUM;
+	itemHeight = VIEW_W*itemImg.height/itemImg.width/itemNum;
+	itemImgHeight = itemImg.height/itemNum;
 	itemImgWidth = itemImg.width;
 	if (itemImg.height>(itemImg.width*VIEW_H/VIEW_W)){
-		itemHeight = VIEW_H/ITEM_NUM;
+		itemHeight = VIEW_H/itemNum;
 		itemWidth = VIEW_H*itemImg.width/itemImg.height;
 	}
 	playerWidth = itemWidth+8;
 	playerHeight = itemHeight+8;
 	textSize(40);
-	for (let i=0; i<items.length; i++){
+	for (let i=0; i<itemNum; i++){
 		if (i!=player.getIndex){
 			strokeWeight(0);
 			image(itemImg, (CANVAS_W-itemWidth)/2, ITEM_BASE_Y+itemHeight*items[i].pos.y, itemWidth, itemHeight,
@@ -244,7 +257,6 @@ function draw() {
 		textAlign(CENTER);
 		text(endTime.toFixed(1)+' sec', CANVAS_W/2, GRID_SIZE*3);
 	}
-//	drawGui();
 	fill(255);
 	stroke(255);
 	textSize(16);
